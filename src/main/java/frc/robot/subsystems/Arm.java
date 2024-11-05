@@ -21,4 +21,14 @@ public class Arm implements ISubsystem{
         double xDifference = setpoint.getX() - Control.arm.ARM_POSITION.getX();
         double yDifference = setpoint.getY() - Control.arm.ARM_POSITION.getY();
     }
+
+    @Override
+    public void onLoop(){
+        receiveOptions();
+        submitTelemetry();
+    }
+    @Override
+    public void submitTelemetry(){}
+    @Override
+    public void receiveOptions(){}
 }
