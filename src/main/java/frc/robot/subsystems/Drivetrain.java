@@ -18,7 +18,14 @@ public class Drivetrain implements ISubsystem{
         dt = new MecanumDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
     }
 
+    public static Drivetrain instance; 
 
+    public static Drivetrain getInstance(){
+        if (instance == null){
+            instance = new Drivetrain();
+        }
+        return instance;
+    }
     
     @Override
     public void onLoop(){}
