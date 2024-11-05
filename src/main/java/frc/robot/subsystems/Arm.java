@@ -4,12 +4,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.constants.Control;
 import frc.robot.constants.Ports;
 
 public class Arm implements ISubsystem{
     CANSparkMax arm, armExtend;
     Translation2d setPoint;
-    Translation2d armPosition;
 
 
     public Arm(){
@@ -18,7 +18,7 @@ public class Arm implements ISubsystem{
     }
 
     public void getSetPointAngle(Translation2d setpoint){
-        double xDifference = setpoint.getX() - armPosition.getX();
-        double yDifference = setpoint.getY() - armPosition.getY();
+        double xDifference = setpoint.getX() - Control.arm.ARM_POSITION.getX();
+        double yDifference = setpoint.getY() - Control.arm.ARM_POSITION.getY();
     }
 }
