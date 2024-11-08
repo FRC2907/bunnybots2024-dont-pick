@@ -14,7 +14,7 @@ public class Superstructure {
         this.drivetrain = Drivetrain.getInstance();
         this.arm = Arm.getInstance();
 
-        this.subsystems = new ISubsystem[]{ drivetrain };
+        this.subsystems = new ISubsystem[]{ arm, drivetrain };
     }
 
     public static Superstructure getInstance(){

@@ -17,7 +17,6 @@ public class Control {
         public static final double MAX_ARM_EXTENSION_TOP = 10.5; //TODO check/revise (in.)
         public static final Translation2d ARM_POSITION = new Translation2d(12.865, 23.663); //TODO check (inches)
 
-        public static final double kMaxExtension = 0; //TODO find
         public static final double kMaxAngle = 0; //TODO find
         public static final double kMinAngle = 0; //TODO find
         public static final double kDropZone = 0; //TODO find

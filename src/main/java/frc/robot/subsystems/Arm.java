@@ -27,7 +27,7 @@ public class Arm implements ISubsystem{
         armExtend.getPIDController().setD(Control.arm.kExtendD);
         armExtend.getPIDController().setFF(Control.arm.kExtendFF);
         armExtend.getEncoder().setPositionConversionFactor(Control.arm.ENCODER_POS_UNIT_PER_INCH);
-        armExtend.getEncoder().setPositionConversionFactor(Control.arm.ENCODER_VEL_UNIT_PER_INCH_PER_SECOND);
+        armExtend.getEncoder().setVelocityConversionFactor(Control.arm.ENCODER_VEL_UNIT_PER_INCH_PER_SECOND);
     }
 
     private static Arm instance;
@@ -48,8 +48,8 @@ public class Arm implements ISubsystem{
     }
 
     public void setSetPoint(Translation2d _setPoint){
-        double x = Util.clamp(0, _setPoint.getX(), Control.arm.MAX_ARM_EXTENSION_SIDE);
-        double y = Util.clamp(0, _setPoint.getY(), Control.arm.MAX_ARM_EXTENSION_TOP);
+        double x = Util.clamp(Control.arm.ARM_POSITION.getX(), _setPoint.getX(), Control.arm.MAX_ARM_EXTENSION_SIDE);
+        double y = Util.clamp(Control.arm.ARM_POSITION.getY(), _setPoint.getY(), Control.arm.MAX_ARM_EXTENSION_TOP);
         double hypotenuse = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
         double angle = getSetPointAngle(new Translation2d(x, y));
 
