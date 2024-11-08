@@ -16,7 +16,27 @@ public class Arm implements ISubsystem{
 
     public Arm(){
         arm = new CANSparkMax(Ports.arm.ARM, MotorType.kBrushless);
+        arm.getPIDController().setP(Control.arm.kAngleP);
+        arm.getPIDController().setD(Control.arm.kAngleD);
+        arm.getPIDController().setFF(Control.arm.kAngleFF);
+        arm.getEncoder().setPositionConversionFactor(Control.arm.ENCODER_POS_UNIT_PER_DEGREE);
+        arm.getEncoder().setVelocityConversionFactor(Control.arm.ENCODER_VEL_UNIT_PER_DEGREE_PER_SECOND);
+
         armExtend = new CANSparkMax(Ports.arm.ARM_EXTENSION, MotorType.kBrushless);
+        armExtend.getPIDController().setP(Control.arm.kExtendP);
+        armExtend.getPIDController().setD(Control.arm.kExtendD);
+        armExtend.getPIDController().setFF(Control.arm.kExtendFF);
+        armExtend.getEncoder().setPositionConversionFactor(Control.arm.ENCODER_POS_UNIT_PER_INCH);
+        armExtend.getEncoder().setPositionConversionFactor(Control.arm.ENCODER_VEL_UNIT_PER_INCH_PER_SECOND);
+    }
+
+    private static Arm instance;
+
+    public static Arm getInstance(){
+        if(instance == null){
+            instance = new Arm();
+        }
+        return instance;
     }
 
     public double getSetPointAngle(Translation2d _setPoint){
