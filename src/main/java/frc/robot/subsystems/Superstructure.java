@@ -10,7 +10,8 @@ public class Superstructure implements ISubsystem{
 
     private static Superstructure instance;
 
-    private RobotState state;
+    private ManipulatorState manipulatorState;
+    private TransportState transportState;
 
     private PS5Controller driver;
     private PS5Controller operator;
@@ -32,28 +33,36 @@ public class Superstructure implements ISubsystem{
         return instance;
     }
 
-    public enum RobotState {
+    public enum ManipulatorState {
         START, NEUTRAL, 
-        MOVING_TO_BALLOON, READY_TO_GRAB_BALLOON, HOLDING_BALLOON, DROPPING_BALLOON,
-        MOVING_TO_TOTE, READY_TO_PICKUP_TOTE, HOLDING_TOTE, DROPPING_TOTE 
+        MOVING_TO_BALLOON, READY_TO_GRAB_BALLOON, MOVING_TO_DROPZONE, IN_DROPZONE, 
+        HOLDING_BALLOON, DROPPING_BALLOON,
     }
 
-    public RobotState getState() { return this.state; }
+    public enum TransportState {
+        START, NEUTRAL,
+        MOVING_TO_TOTE, READY_TO_PICKUP_TOTE, 
+        EXTENDED, RETRACTED, HOOKED, 
+        HOLDING_TOTE, DROPPING_TOTE
+    }
 
-    public void start()             { this.state = RobotState.START; }
-    public void neutral()           { this.state = RobotState.NEUTRAL; }
-    public void movingToBalloon()   { this.state = RobotState.MOVING_TO_BALLOON; }
-    public void readyToGrabBalloon(){ this.state = RobotState.READY_TO_GRAB_BALLOON; }
-    public void holdingBalloon()    { this.state = RobotState.HOLDING_BALLOON; }
-    public void droppingBalloon()   { this.state = RobotState.DROPPING_BALLOON; }
-    public void movingToTote()      { this.state = RobotState.MOVING_TO_TOTE; }
-    public void readyToPickupTote() { this.state = RobotState.READY_TO_PICKUP_TOTE; }
-    public void holdingTote()       { this.state = RobotState.HOLDING_TOTE; }
-    public void droppingTote()      { this.state = RobotState.DROPPING_TOTE; }
+    public ManipulatorState getManipulatorState() { return this.manipulatorState; }
+    public TransportState getTransportState() { return this.transportState; }
+
+    public void start()             { this.manipulatorState = ManipulatorState.START; }
+    public void neutral()           { this.manipulatorState = ManipulatorState.NEUTRAL; }
+    public void movingToBalloon()   { this.manipulatorState = ManipulatorState.MOVING_TO_BALLOON; }
+    public void readyToGrabBalloon(){ this.manipulatorState = ManipulatorState.READY_TO_GRAB_BALLOON; }
+    public void holdingBalloon()    { this.manipulatorState = ManipulatorState.HOLDING_BALLOON; }
+    public void droppingBalloon()   { this.manipulatorState = ManipulatorState.DROPPING_BALLOON; }
+    public void movingToTote()      { this.transportState = TransportState.MOVING_TO_TOTE; }
+    public void readyToPickupTote() { this.transportState = TransportState.READY_TO_PICKUP_TOTE; }
+    public void holdingTote()       { this.transportState = TransportState.HOLDING_TOTE; }
+    public void droppingTote()      { this.transportState = TransportState.DROPPING_TOTE; }
 
 
-    public void handleStates(){
-        switch (this.state) {
+    public void handleManipulatorState(){
+        switch (this.manipulatorState) {
             case START:
                 break;
             case NEUTRAL:
@@ -69,22 +78,16 @@ public class Superstructure implements ISubsystem{
                 break;
             case DROPPING_BALLOON:
                 break;
-
-            
-            case MOVING_TO_TOTE:
+            case MOVING_TO_DROPZONE:
                 break;
-            case READY_TO_PICKUP_TOTE:
-                break;
-            case HOLDING_TOTE:
-                break;
-            case DROPPING_TOTE:
+            case IN_DROPZONE:
                 break;
         }
     }
 
     @Override
     public void onLoop(){
-        handleStates();
+        handleManipulatorState();
 
         receiveOptions();
         submitTelemetry();
