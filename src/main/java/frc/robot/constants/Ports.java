@@ -12,4 +12,9 @@ public class Ports {
         public static final int FRONT_RIGHT = 3;
         public static final int REAR_RIGHT = 4;
     }
+
+    public class HID {
+        public static final int DRIVER = 0;
+        public static final int OPERATOR = 1;
+    }
 }
