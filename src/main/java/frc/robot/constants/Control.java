@@ -13,6 +13,8 @@ public class Control {
         public static final double ENCODER_POS_UNIT_PER_INCH = 0; //TODO FIND
         public static final double ENCODER_VEL_UNIT_PER_INCH_PER_SECOND = 0; //TODO FIND
 
+        public static final double MAX_ARM_EXTENSION = 30; //TODO check (in.)
+        public static final double MIN_ARM_EXTENSION = 9.75; //TODO check (in.)
         public static final double MAX_ARM_EXTENSION_SIDE = 16; //TODO check/revise (in.)
         public static final double MAX_ARM_EXTENSION_TOP = 10.5; //TODO check/revise (in.)
         public static final double MIN_ANGLE_FOR_MAX_EXTENSION = 249;
