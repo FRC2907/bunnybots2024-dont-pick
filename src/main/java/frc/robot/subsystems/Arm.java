@@ -12,6 +12,8 @@ import frc.robot.constants.Ports;
 public class Arm implements ISubsystem{
     CANSparkMax arm, armExtend;
     Translation2d setPoint;
+    double extensionSetPoint;
+    double angleSetPoint;
 
 
     public Arm(){
@@ -28,6 +30,10 @@ public class Arm implements ISubsystem{
         armExtend.getPIDController().setFF(Control.arm.kExtendFF);
         armExtend.getEncoder().setPositionConversionFactor(Control.arm.ENCODER_POS_UNIT_PER_INCH);
         armExtend.getEncoder().setVelocityConversionFactor(Control.arm.ENCODER_VEL_UNIT_PER_INCH_PER_SECOND);
+        
+        extensionSetPoint = 0;
+
+        angleSetPoint = 0;
     }
 
     private static Arm instance;
@@ -53,20 +59,56 @@ public class Arm implements ISubsystem{
         double hypotenuse = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
         double angle = getSetPointAngle(new Translation2d(x, y));
 
-        arm.getPIDController().setReference(angle, ControlType.kPosition);
-        armExtend.getPIDController().setReference(hypotenuse, ControlType.kPosition);
+        angle = Util.clamp(Control.arm.MIN_ANGLE, angle, Control.arm.MAX_ANGLE);
+        hypotenuse = Util.clamp(Control.arm.MIN_ARM_EXTENSION, hypotenuse, Control.arm.MAX_ARM_EXTENSION);
+
+        angleSetPoint = angle;
+        extensionSetPoint = hypotenuse;
     }
 
     public void setSetPoint(double angle){
         double x = Control.arm.MAX_ARM_EXTENSION_SIDE;
         double hypotenuse = x/Math.cos(angle);
+        angle = Util.clamp(Control.arm.MIN_ANGLE, angle, Control.arm.MAX_ANGLE);
+        hypotenuse = Util.clamp(Control.arm.MIN_ARM_EXTENSION, hypotenuse, Control.arm.MAX_ARM_EXTENSION);
         
-        arm.getPIDController().setReference(angle, ControlType.kPosition);
-        armExtend.getPIDController().setReference(hypotenuse, ControlType.kPosition);
+        angleSetPoint = angle;
+        extensionSetPoint = hypotenuse;
     }
+
+    public void setSetPoint(double angle, double length) {
+        length = Util.clamp(Control.arm.MIN_ARM_EXTENSION, length, Control.arm.MAX_ARM_EXTENSION);
+        angle = Util.clamp(Control.arm.MIN_ANGLE, angle, Control.arm.MAX_ANGLE);
+
+        angleSetPoint = angle;
+        extensionSetPoint = length;
+    }
+
+    public void start() {
+        setSetPoint(Control.arm.kStartAngle, Control.arm.kStartExtension);
+    }
+
+    public void neutral() {
+        setSetPoint(Control.arm.kNeutralAngle, Control.arm.kNeutralExtension);
+    }
+
+    public void pickup(){
+        setSetPoint(Control.arm.kPickup);
+    }
+
+    public void drop(){
+        setSetPoint(Control.arm.kDropZone);
+    }
+
+    public void manualMove(double joystick){
+        setSetPoint(joystick*(angleSetPoint+3));
+    }
+
 
     @Override
     public void onLoop(){
+        arm.getPIDController().setReference(angleSetPoint, ControlType.kPosition);
+        armExtend.getPIDController().setReference(extensionSetPoint, ControlType.kPosition);
         receiveOptions();
         submitTelemetry();
     }
