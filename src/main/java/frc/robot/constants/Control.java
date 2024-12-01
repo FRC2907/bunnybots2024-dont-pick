@@ -30,12 +30,22 @@ public class Control {
         public static final double kNeutralExtension = 0; //TODO find
         
         public static final double kAngleP = 0.001;
+        public static final double kAngleI = 0.001;
         public static final double kAngleD = 0.001;
-        public static final double kAngleFF = 0.001;
 
         public static final double kExtendP = 0.001;
+        public static final double kExtendI = 0.001;
         public static final double kExtendD = 0.001;
-        public static final double kExtendFF = 0.001;
+
+        public static final double kAngleG = 0; //TODO find
+        public static final double kAngleV = 0; //TODO find
+        public static final double kAngleA = 0; //TODO find
+        public static final double kAngleS = 0; //TODO find
+        
+        public static final double kExtendG = 0; //TODO find
+        public static final double kExtendV = 0; //TODO find
+        public static final double kExtendA = 0; //TODO find
+        public static final double kExtendS = 0; //TODO find
     }
 
     public class drivetrain {
@@ -51,8 +61,22 @@ public class Control {
         public static final double kVelocityConversionFactor = 0; //TODO find
         public static final double kMaxVel = 0; //TODO find
         
-        public static final double kP = 0.001;
-        public static final double kD = 0.001;
-        public static final double kFF = 0.001;
+        public static final double kflP = 0.001;
+        public static final double kflI = 0.001;
+        public static final double kflD = 0.001;
+        public static final double krlP = 0.001;
+        public static final double krlI = 0.001;
+        public static final double krlD = 0.001;
+        public static final double kfrP = 0.001;
+        public static final double kfrI = 0.001;
+        public static final double kfrD = 0.001;
+        public static final double krrP = 0.001;
+        public static final double krrI = 0.001;
+        public static final double krrD = 0.001;
+
+        public static final double kG = 0; //TODO find
+        public static final double kV = 0; //TODO find
+        public static final double kA = 0; //TODO find
+        public static final double kS = 0; //TODO find
     }
 }

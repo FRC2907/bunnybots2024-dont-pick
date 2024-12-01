@@ -4,32 +4,36 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Util;
 import frc.robot.constants.Control;
 import frc.robot.constants.Ports;
 
 public class Arm implements ISubsystem{
-    CANSparkMax arm, armExtend;
-    Translation2d setPoint;
-    double extensionSetPoint;
-    double angleSetPoint;
-
+    private CANSparkMax arm, armExtend;
+    private double extensionSetPoint;
+    private double angleSetPoint;
+    private SimpleMotorFeedforward extendFeedforward;
+    private ArmFeedforward angleFeedforward;
+    private PIDController anglePID;
+    private PIDController extendPID;
 
     public Arm(){
         arm = new CANSparkMax(Ports.arm.ARM, MotorType.kBrushless);
-        arm.getPIDController().setP(Control.arm.kAngleP);
-        arm.getPIDController().setD(Control.arm.kAngleD);
-        arm.getPIDController().setFF(Control.arm.kAngleFF);
         arm.getEncoder().setPositionConversionFactor(Control.arm.ENCODER_POS_UNIT_PER_DEGREE);
         arm.getEncoder().setVelocityConversionFactor(Control.arm.ENCODER_VEL_UNIT_PER_DEGREE_PER_SECOND);
+        angleFeedforward = new ArmFeedforward(Control.arm.kAngleS, Control.arm.kAngleG, Control.arm.kAngleV, Control.arm.kAngleA);
+        anglePID = new PIDController(Control.arm.kAngleP, Control.arm.kAngleI, Control.arm.kAngleD);
 
         armExtend = new CANSparkMax(Ports.arm.ARM_EXTENSION, MotorType.kBrushless);
-        armExtend.getPIDController().setP(Control.arm.kExtendP);
-        armExtend.getPIDController().setD(Control.arm.kExtendD);
-        armExtend.getPIDController().setFF(Control.arm.kExtendFF);
         armExtend.getEncoder().setPositionConversionFactor(Control.arm.ENCODER_POS_UNIT_PER_INCH);
         armExtend.getEncoder().setVelocityConversionFactor(Control.arm.ENCODER_VEL_UNIT_PER_INCH_PER_SECOND);
+        extendFeedforward = new SimpleMotorFeedforward(Control.arm.kExtendS, Control.arm.kExtendV, Control.arm.kExtendA);
+        extendPID = new PIDController(Control.arm.kExtendP, Control.arm.kExtendI, Control.arm.kExtendD);
         
         extensionSetPoint = 0;
 
@@ -107,8 +111,10 @@ public class Arm implements ISubsystem{
 
     @Override
     public void onLoop(){
-        arm.getPIDController().setReference(angleSetPoint, ControlType.kPosition);
-        armExtend.getPIDController().setReference(extensionSetPoint, ControlType.kPosition);
+        arm.setVoltage(angleFeedforward.calculate(Units.degreesToRadians(angleSetPoint), 0)
+        + anglePID.calculate(arm.getEncoder().getVelocity(), angleSetPoint));
+        armExtend.setVoltage(extendFeedforward.calculate(extensionSetPoint) 
+        + extendPID.calculate(armExtend.getEncoder().getVelocity(), extensionSetPoint));
         receiveOptions();
         submitTelemetry();
     }
