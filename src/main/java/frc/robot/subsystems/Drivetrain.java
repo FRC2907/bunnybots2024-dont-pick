@@ -100,10 +100,10 @@ public class Drivetrain implements ISubsystem{
     }
 
     private void conversion(){
-        frontLeftSetPoint =  Util.metersPerSecondToRPM(frontLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER) * Control.drivetrain.GEAR_RATIO);
-        rearLeftSetPoint =   Util.metersPerSecondToRPM(rearLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER) * Control.drivetrain.GEAR_RATIO);
-        frontRightSetPoint = Util.metersPerSecondToRPM(frontRightSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER) * Control.drivetrain.GEAR_RATIO);
-        rearRightSetPoint =  Util.metersPerSecondToRPM(frontLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER) * Control.drivetrain.GEAR_RATIO);
+        frontLeftSetPoint =  Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(frontLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
+        rearLeftSetPoint =   Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(rearLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
+        frontRightSetPoint = Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(frontRightSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
+        rearRightSetPoint =  Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(frontLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
     }
 
     
