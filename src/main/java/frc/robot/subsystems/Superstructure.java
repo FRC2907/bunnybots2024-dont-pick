@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.PS5Controller;
+import frc.robot.constants.Control;
 import frc.robot.constants.Ports;
 
 public class Superstructure implements ISubsystem{
@@ -123,7 +124,11 @@ public class Superstructure implements ISubsystem{
     }
 
     private void drive(){
-        drivetrain.setLocalDriveInputs(driver.getLeftY(), driver.getLeftX(), driver.getRightX());
+        drivetrain.setLocalDriveInputs(driver.getLeftY()  * Control.drivetrain.kMaxVel,
+                                       driver.getLeftX()  * Control.drivetrain.kMaxVel, 
+                                       driver.getRightX() * Control.drivetrain.kMaxVel); 
+        //TODO change to m/s
+        //TODO add drive states
     }
 
     @Override
@@ -132,6 +137,8 @@ public class Superstructure implements ISubsystem{
         handleTransportState();
         drive();
 
+        for (ISubsystem s : subsystems){ s.onLoop(); }
+        
         receiveOptions();
         submitTelemetry();
     }

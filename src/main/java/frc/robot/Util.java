@@ -60,4 +60,8 @@ public class Util {
         System.err.println("[EE] I could not find an alliance");
 		return true;
 	}
+
+    public static double metersPerSecondToRPM(double speed, double diameter){
+        return (speed / (diameter * Math.PI)) * 60;
+    }
 }

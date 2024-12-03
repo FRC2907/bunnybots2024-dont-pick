@@ -5,8 +5,10 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import frc.robot.Util;
 import frc.robot.constants.Control;
 import frc.robot.constants.Ports;
 
@@ -31,14 +33,17 @@ public class Drivetrain implements ISubsystem{
         rearLeftMotor = new CANSparkMax(Ports.drivetrain.REAR_LEFT, MotorType.kBrushless);
         frontRightMotor = new CANSparkMax(Ports.drivetrain.FRONT_RIGHT, MotorType.kBrushless);
         rearRightMotor = new CANSparkMax(Ports.drivetrain.REAR_RIGHT, MotorType.kBrushless);
+
         flEncoder = frontLeftMotor.getEncoder();
         rlEncoder = rearLeftMotor.getEncoder();
         frEncoder = frontRightMotor.getEncoder();
         rrEncoder = rearRightMotor.getEncoder();
+
         dt = new MecanumDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
-        wheelPositions = new MecanumDriveWheelPositions(frontLeftMotor.getEncoder().getPosition(),
-            frontRightMotor.getEncoder().getPosition(), rearLeftMotor.getEncoder().getPosition(), 
-            rearRightMotor.getEncoder().getPosition());
+
+        wheelPositions = new MecanumDriveWheelPositions(
+            flEncoder.getPosition(), frEncoder.getPosition(), 
+            rlEncoder.getPosition(), rrEncoder.getPosition());
         gyro = new AHRS(SPI.Port.kMXP);
 
         flFeedforward = new SimpleMotorFeedforward(Control.drivetrain.kS, Control.drivetrain.kV, Control.drivetrain.kA);
@@ -50,10 +55,9 @@ public class Drivetrain implements ISubsystem{
         rlPID = new PIDController(Control.drivetrain.krlP, Control.drivetrain.krlI, Control.drivetrain.krlD);
         frPID = new PIDController(Control.drivetrain.kfrP, Control.drivetrain.kfrI, Control.drivetrain.kfrD);
         rrPID = new PIDController(Control.drivetrain.krrP, Control.drivetrain.krrI, Control.drivetrain.krrD);
-
         }
 
-    public static Drivetrain instance; 
+    private static Drivetrain instance; 
 
     public static Drivetrain getInstance(){
         if (instance == null){
@@ -70,17 +74,23 @@ public class Drivetrain implements ISubsystem{
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, zRotation);
         MecanumDriveWheelSpeeds wheelSpeeds = (Control.drivetrain.DRIVE_KINEMATICS.toWheelSpeeds(chassisSpeeds));
 
-        setWheelSpeeds(wheelSpeeds.frontLeftMetersPerSecond, wheelSpeeds.rearLeftMetersPerSecond, wheelSpeeds.frontRightMetersPerSecond,
-        wheelSpeeds.rearRightMetersPerSecond);
+        setWheelSpeeds(
+            wheelSpeeds.frontLeftMetersPerSecond, 
+            wheelSpeeds.rearLeftMetersPerSecond, 
+            wheelSpeeds.frontRightMetersPerSecond,
+            wheelSpeeds.rearRightMetersPerSecond);
     }
 
     public void setFieldDriveInputs(double xSpeed, double ySpeed, double zRotation){
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, zRotation);
-        chassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, gyro.getRotation2d());
+        chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(chassisSpeeds, gyro.getRotation2d());
         MecanumDriveWheelSpeeds wheelSpeeds = (Control.drivetrain.DRIVE_KINEMATICS.toWheelSpeeds(chassisSpeeds));
 
-        setWheelSpeeds(wheelSpeeds.frontLeftMetersPerSecond, wheelSpeeds.rearLeftMetersPerSecond, wheelSpeeds.frontRightMetersPerSecond,
-        wheelSpeeds.rearRightMetersPerSecond);
+        setWheelSpeeds(
+            wheelSpeeds.frontLeftMetersPerSecond, 
+            wheelSpeeds.rearLeftMetersPerSecond, 
+            wheelSpeeds.frontRightMetersPerSecond,
+            wheelSpeeds.rearRightMetersPerSecond);
     }
     private void setWheelSpeeds(double flSetPoint, double rlSetPoint, double frSetPoint, double rrSetPoint){
         frontLeftSetPoint = flSetPoint;
@@ -89,18 +99,32 @@ public class Drivetrain implements ISubsystem{
         rearRightSetPoint = rrSetPoint;
     }
 
+    private void conversion(){
+        frontLeftSetPoint =  Util.metersPerSecondToRPM(frontLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER) * Control.drivetrain.GEAR_RATIO);
+        rearLeftSetPoint =   Util.metersPerSecondToRPM(rearLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER) * Control.drivetrain.GEAR_RATIO);
+        frontRightSetPoint = Util.metersPerSecondToRPM(frontRightSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER) * Control.drivetrain.GEAR_RATIO);
+        rearRightSetPoint =  Util.metersPerSecondToRPM(frontLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER) * Control.drivetrain.GEAR_RATIO);
+    }
+
     
     @Override
     public void onLoop(){
-        frontLeftMotor.setVoltage(flFeedforward.calculate(frontLeftSetPoint)
-        + flPID.calculate(flEncoder.getVelocity(), frontLeftSetPoint));
-        rearLeftMotor.setVoltage(rlFeedforward.calculate(rearLeftSetPoint)
-        + rlPID.calculate(rlEncoder.getVelocity(), rearLeftSetPoint));
-        frontRightMotor.setVoltage(frFeedforward.calculate(frontRightSetPoint)
-        + frPID.calculate(frEncoder.getVelocity(), frontRightSetPoint));
-        rearRightMotor.setVoltage(rrFeedforward.calculate(rearRightSetPoint) 
-        + rrPID.calculate(rrEncoder.getVelocity(), rearRightSetPoint));
+        conversion();
+
+        frontLeftMotor. setVoltage(Util.clamp(Control.MIN_VOLTAGE, 
+             flFeedforward.calculate(frontLeftSetPoint)
+          +  flPID.calculate(flEncoder.getVelocity(), frontLeftSetPoint), Control.MAX_VOLTAGE));
+        rearLeftMotor.  setVoltage(Util.clamp(Control.MIN_VOLTAGE,
+              rlFeedforward.calculate(rearLeftSetPoint)
+          +   rlPID.calculate(rlEncoder.getVelocity(), rearLeftSetPoint), Control.MAX_VOLTAGE));
+        frontRightMotor.setVoltage(Util.clamp(Control.MIN_VOLTAGE, 
+            frFeedforward.calculate(frontRightSetPoint)
+          + frPID.calculate(frEncoder.getVelocity(), frontRightSetPoint), Control.MAX_VOLTAGE));
+        rearRightMotor. setVoltage(Util.clamp(Control.MIN_VOLTAGE,
+             rrFeedforward.calculate(rearRightSetPoint) 
+          +  rrPID.calculate(rrEncoder.getVelocity(), rearRightSetPoint), Control.MAX_VOLTAGE));
     }
+
     @Override
     public void submitTelemetry(){}
     @Override

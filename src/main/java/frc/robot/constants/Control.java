@@ -4,6 +4,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 
 public class Control {
+    public static final double MIN_VOLTAGE = 0;
+    public static final double MAX_VOLTAGE = 12;
+
     public static final double kDriverDeadband = 0.08;
 
     public class arm {
@@ -49,7 +52,7 @@ public class Control {
     }
 
     public class drivetrain {
-        public static final double GEAR_RATIO = 0; //TODO find
+        public static final double GEAR_RATIO = 5.95; 
         public static final double WHEEL_DIAMETER = 6; //inches
         public static final Translation2d FRONT_LEFT_LOCATION = new Translation2d(0,0); //TODO find
         public static final Translation2d REAR_LEFT_LOCATION = new Translation2d(0,0); //TODO find
@@ -59,20 +62,26 @@ public class Control {
             (FRONT_LEFT_LOCATION, FRONT_RIGHT_LOCATION, REAR_LEFT_LOCATION, REAR_RIGHT_LOCATION);
 
         public static final double kVelocityConversionFactor = 0; //TODO find
-        public static final double kMaxVel = 0; //TODO find
+        public static final double kMinVel = 0; //m/s
+        public static final double kMaxVel = 10; //TODO check m/s
         
+
         public static final double kflP = 0.001;
         public static final double kflI = 0.001;
         public static final double kflD = 0.001;
+
         public static final double krlP = 0.001;
         public static final double krlI = 0.001;
         public static final double krlD = 0.001;
+
         public static final double kfrP = 0.001;
         public static final double kfrI = 0.001;
         public static final double kfrD = 0.001;
+
         public static final double krrP = 0.001;
         public static final double krrI = 0.001;
         public static final double krrD = 0.001;
+
 
         public static final double kG = 0; //TODO find
         public static final double kV = 0; //TODO find
