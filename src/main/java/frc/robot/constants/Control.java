@@ -84,8 +84,8 @@ public class Control {
 
 
         public static final double kG = 0; //TODO find
-        public static final double kV = 0; //TODO find
-        public static final double kA = 0; //TODO find
+        public static final double kV = 1.52; //TODO check with ReCalc
+        public static final double kA = 0.49; //TODO check with ReCalc
         public static final double kS = 0; //TODO find
     }
 }
