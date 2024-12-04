@@ -16,6 +16,7 @@ import frc.robot.constants.Ports;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 public class Drivetrain implements ISubsystem{
@@ -56,7 +57,27 @@ public class Drivetrain implements ISubsystem{
         rlPID = new PIDController(Control.drivetrain.krlP, Control.drivetrain.krlI, Control.drivetrain.krlD);
         frPID = new PIDController(Control.drivetrain.kfrP, Control.drivetrain.kfrI, Control.drivetrain.kfrD);
         rrPID = new PIDController(Control.drivetrain.krrP, Control.drivetrain.krrI, Control.drivetrain.krrD);
-        }
+
+        frontLeftMotor.setInverted(false);
+        frontRightMotor.setInverted(true);
+        rearLeftMotor.setInverted(false);
+        rearRightMotor.setInverted(true);
+
+        flEncoder.setVelocityConversionFactor(1);
+        frEncoder.setVelocityConversionFactor(1);
+        rlEncoder.setVelocityConversionFactor(1);
+        rrEncoder.setVelocityConversionFactor(1);
+
+        flEncoder.setPositionConversionFactor(1);
+        frEncoder.setPositionConversionFactor(1);
+        rlEncoder.setPositionConversionFactor(1);
+        rrEncoder.setPositionConversionFactor(1);
+
+        frontLeftMotor.setIdleMode(IdleMode.kBrake);
+        frontRightMotor.setIdleMode(IdleMode.kBrake);
+        rearLeftMotor.setIdleMode(IdleMode.kBrake);
+        rearRightMotor.setIdleMode(IdleMode.kBrake);
+    }
 
     private static Drivetrain instance; 
 
@@ -101,6 +122,11 @@ public class Drivetrain implements ISubsystem{
     }
 
     private void conversion(){
+        /*frontLeftSetPoint = frontLeftSetPoint * Control.drivetrain.GEAR_RATIO;
+        frontLeftSetPoint = frontLeftSetPoint * Control.drivetrain.GEAR_RATIO;
+        frontLeftSetPoint = frontLeftSetPoint * Control.drivetrain.GEAR_RATIO;
+        frontLeftSetPoint = frontLeftSetPoint * Control.drivetrain.GEAR_RATIO;*/
+        
         frontLeftSetPoint =  Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(frontLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
         rearLeftSetPoint =   Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(rearLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
         frontRightSetPoint = Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(frontRightSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
@@ -108,10 +134,10 @@ public class Drivetrain implements ISubsystem{
     }
 
     public void gainTesting(){
-        frontLeftMotor.setVoltage(0.1);
-        frontRightMotor.setVoltage(0.1);
-        rearLeftMotor.setVoltage(0.1);
-        rearRightMotor.setVoltage(0.1);
+        frontLeftMotor.setVoltage(1);
+        frontRightMotor.setVoltage(1);
+        rearLeftMotor.setVoltage(1);
+        rearRightMotor.setVoltage(1);
     }
 
     
@@ -120,7 +146,7 @@ public class Drivetrain implements ISubsystem{
         gainTesting();
 
         //COMMENT OUT WHEN TESTING
-        conversion();
+        /*conversion();
 
         frontLeftMotor. setVoltage(Util.clamp(Control.MIN_VOLTAGE, 
              flFeedforward.calculate(frontLeftSetPoint)
@@ -133,7 +159,10 @@ public class Drivetrain implements ISubsystem{
           + frPID.calculate(frEncoder.getVelocity(), frontRightSetPoint), Control.MAX_VOLTAGE));
         rearRightMotor. setVoltage(Util.clamp(Control.MIN_VOLTAGE,
              rrFeedforward.calculate(rearRightSetPoint) 
-          +  rrPID.calculate(rrEncoder.getVelocity(), rearRightSetPoint), Control.MAX_VOLTAGE));
+          +  rrPID.calculate(rrEncoder.getVelocity(), rearRightSetPoint), Control.MAX_VOLTAGE));*/
+        
+        submitTelemetry();
+        receiveOptions();
     }
 
     @Override

@@ -19,9 +19,9 @@ public class Superstructure implements ISubsystem{
 
     private Superstructure(){
         this.drivetrain = Drivetrain.getInstance();
-        this.arm = Arm.getInstance();
+        //this.arm = Arm.getInstance();
 
-        this.subsystems = new ISubsystem[]{ arm, drivetrain };
+        this.subsystems = new ISubsystem[]{ drivetrain };
 
         this.driver = new PS5Controller(Ports.HID.DRIVER);
         this.operator = new PS5Controller(Ports.HID.OPERATOR);
@@ -133,8 +133,8 @@ public class Superstructure implements ISubsystem{
 
     @Override
     public void onLoop(){
-        handleManipulatorState();
-        handleTransportState();
+        //handleManipulatorState();
+        //handleTransportState();
         drive();
 
         for (ISubsystem s : subsystems){ s.onLoop(); }
