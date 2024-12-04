@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Util;
 import frc.robot.constants.Control;
 import frc.robot.constants.Ports;
@@ -106,9 +107,19 @@ public class Drivetrain implements ISubsystem{
         rearRightSetPoint =  Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(frontLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
     }
 
+    public void gainTesting(){
+        frontLeftMotor.setVoltage(0.1);
+        frontRightMotor.setVoltage(0.1);
+        rearLeftMotor.setVoltage(0.1);
+        rearRightMotor.setVoltage(0.1);
+    }
+
     
     @Override
     public void onLoop(){
+        gainTesting();
+
+        //COMMENT OUT WHEN TESTING
         conversion();
 
         frontLeftMotor. setVoltage(Util.clamp(Control.MIN_VOLTAGE, 
@@ -126,7 +137,15 @@ public class Drivetrain implements ISubsystem{
     }
 
     @Override
-    public void submitTelemetry(){}
+    public void submitTelemetry(){
+        SmartDashboard.putNumber("dt_flVelocity", flEncoder.getVelocity());
+        SmartDashboard.putNumber("dt_frVelocity", frEncoder.getVelocity());
+        SmartDashboard.putNumber("dt_rlVelocity", rlEncoder.getVelocity());
+        SmartDashboard.putNumber("dt_rrVelocity", rrEncoder.getVelocity());
+        SmartDashboard.putNumber("dt_heading", gyro.getAngle());
+        SmartDashboard.putNumber("dt_angVel", gyro.getRate());
+    }
+    
     @Override
     public void receiveOptions(){}
 }

@@ -40,12 +40,11 @@ public class Control {
         public static final double kExtendI = 0.001;
         public static final double kExtendD = 0.001;
 
-        public static final double kAngleG = 0; //TODO find
-        public static final double kAngleV = 0; //TODO find
-        public static final double kAngleA = 0; //TODO find
+        public static final double kAngleG = 0.46; //TODO check with ReCalc
+        public static final double kAngleV = 1.95; //TODO check with ReCalc
+        public static final double kAngleA = 0.01; //TODO check with ReCalc
         public static final double kAngleS = 0; //TODO find
         
-        public static final double kExtendG = 0; //TODO find
         public static final double kExtendV = 0; //TODO find
         public static final double kExtendA = 0; //TODO find
         public static final double kExtendS = 0; //TODO find
@@ -63,7 +62,7 @@ public class Control {
 
         public static final double kVelocityConversionFactor = 0; //TODO find
         public static final double kMinVel = 0; //m/s
-        public static final double kMaxVel = 10; //TODO check m/s
+        public static final double kMaxVel = 7; //TODO check m/s
         
 
         public static final double kflP = 0.001;
@@ -83,7 +82,7 @@ public class Control {
         public static final double krrD = 0.001;
 
 
-        public static final double kG = 0; //TODO find
+
         public static final double kV = 1.52; //TODO check with ReCalc
         public static final double kA = 0.49; //TODO check with ReCalc
         public static final double kS = 0; //TODO find
