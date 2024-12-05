@@ -41,7 +41,7 @@ public class Drivetrain implements ISubsystem{
         frEncoder = frontRightMotor.getEncoder();
         rrEncoder = rearRightMotor.getEncoder();
 
-        dt = new MecanumDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
+        //dt = new MecanumDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
 
         wheelPositions = new MecanumDriveWheelPositions(
             flEncoder.getPosition(), frEncoder.getPosition(), 
@@ -138,6 +138,11 @@ public class Drivetrain implements ISubsystem{
         frontRightMotor.setVoltage(1);
         rearLeftMotor.setVoltage(1);
         rearRightMotor.setVoltage(1);
+
+        /*frontLeftSetPoint = 1;
+        frontRightSetPoint = 1;
+        rearLeftSetPoint = 1;
+        rearRightSetPoint = 1;*/
     }
 
     
@@ -146,20 +151,20 @@ public class Drivetrain implements ISubsystem{
         gainTesting();
 
         //COMMENT OUT WHEN TESTING
-        /*conversion();
+        //conversion();
 
         frontLeftMotor. setVoltage(Util.clamp(Control.MIN_VOLTAGE, 
              flFeedforward.calculate(frontLeftSetPoint)
-          +  flPID.calculate(flEncoder.getVelocity(), frontLeftSetPoint), Control.MAX_VOLTAGE));
+          /*+  flPID.calculate(flEncoder.getVelocity(), frontLeftSetPoint)*/, Control.MAX_VOLTAGE));
         rearLeftMotor.  setVoltage(Util.clamp(Control.MIN_VOLTAGE,
               rlFeedforward.calculate(rearLeftSetPoint)
-          +   rlPID.calculate(rlEncoder.getVelocity(), rearLeftSetPoint), Control.MAX_VOLTAGE));
+          /*+   rlPID.calculate(rlEncoder.getVelocity(), rearLeftSetPoint)*/, Control.MAX_VOLTAGE));
         frontRightMotor.setVoltage(Util.clamp(Control.MIN_VOLTAGE, 
             frFeedforward.calculate(frontRightSetPoint)
-          + frPID.calculate(frEncoder.getVelocity(), frontRightSetPoint), Control.MAX_VOLTAGE));
+          /*+ frPID.calculate(frEncoder.getVelocity(), frontRightSetPoint)*/, Control.MAX_VOLTAGE));
         rearRightMotor. setVoltage(Util.clamp(Control.MIN_VOLTAGE,
              rrFeedforward.calculate(rearRightSetPoint) 
-          +  rrPID.calculate(rrEncoder.getVelocity(), rearRightSetPoint), Control.MAX_VOLTAGE));*/
+          /*+  rrPID.calculate(rrEncoder.getVelocity(), rearRightSetPoint)*/, Control.MAX_VOLTAGE));
         
         submitTelemetry();
         receiveOptions();

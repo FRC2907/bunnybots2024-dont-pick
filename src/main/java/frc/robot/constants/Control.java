@@ -5,7 +5,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 
 public class Control {
     public static final double MIN_VOLTAGE = 0;
-    public static final double MAX_VOLTAGE = 12;
+    public static final double MAX_VOLTAGE = 10;
 
     public static final double kDriverDeadband = 0.08;
 
@@ -65,24 +65,24 @@ public class Control {
         public static final double kMaxVel = 7; //TODO check m/s
         
 
-        public static final double kflP = 0.001;
+        public static final double kflP = 0.1;
         public static final double kflI = 0;
         public static final double kflD = 0;
 
-        public static final double krlP = 0.001;
+        public static final double krlP = 0.1;
         public static final double krlI = 0;
         public static final double krlD = 0;
 
-        public static final double kfrP = 0.001;
+        public static final double kfrP = 0.1;
         public static final double kfrI = 0;
         public static final double kfrD = 0;
 
-        public static final double krrP = 0.001;
+        public static final double krrP = 0.1;
         public static final double krrI = 0;
         public static final double krrD = 0;
 
-        public static final double kV = 1.52; //TODO check with ReCalc
-        public static final double kA = 0.49; //TODO check with ReCalc
+        public static final double kV = 2.28; //TODO check with ReCalc
+        public static final double kA = 0.09; //TODO check with ReCalc
         public static final double kS = 0; //TODO find
     }
 }
