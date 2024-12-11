@@ -2,6 +2,7 @@ package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.util.Units;
 
 public class Control {
     public static final double MIN_VOLTAGE = 0;
@@ -52,7 +53,7 @@ public class Control {
 
     public class drivetrain {
         public static final double GEAR_RATIO = 5.95; 
-        public static final double WHEEL_DIAMETER = 6; //inches
+        public static final double WHEEL_DIAMETER = Units.inchesToMeters(6); //inches nvm
         public static final Translation2d FRONT_LEFT_LOCATION = new Translation2d(0,0); //TODO find
         public static final Translation2d REAR_LEFT_LOCATION = new Translation2d(0,0); //TODO find
         public static final Translation2d FRONT_RIGHT_LOCATION = new Translation2d(0,0); //TODO find
@@ -65,24 +66,25 @@ public class Control {
         public static final double kMaxVel = 7; //TODO check m/s
         
 
-        public static final double kflP = 0.1;
+        public static final double kflP = 0.9;
         public static final double kflI = 0;
-        public static final double kflD = 0;
+        public static final double kflD = 0.2;
 
-        public static final double krlP = 0.1;
+        public static final double krlP = 0.9;
         public static final double krlI = 0;
-        public static final double krlD = 0;
+        public static final double krlD = 0.2;
 
-        public static final double kfrP = 0.1;
+        public static final double kfrP = 0.9;
         public static final double kfrI = 0;
-        public static final double kfrD = 0;
+        public static final double kfrD = 0.2;
 
-        public static final double krrP = 0.1;
+        public static final double krrP = 0.9;
         public static final double krrI = 0;
-        public static final double krrD = 0;
+        public static final double krrD = 0.2;
 
-        public static final double kV = 2.28; //TODO check with ReCalc
-        public static final double kA = 0.09; //TODO check with ReCalc
-        public static final double kS = 0; //TODO find
+        public static final double kV = 1.52; //TODO check with ReCalc
+        public static final double kA = 0.18; //TODO check with ReCalc
+        public static final double kS = 0.13; //TODO CHECK ON THE FLOOR
+        public static final double krlS = 0.15; //TODO CHECK ON THE FLOOR
     }
 }
