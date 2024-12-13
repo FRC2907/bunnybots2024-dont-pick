@@ -27,7 +27,7 @@ public class Control {
         public static final double MAX_ANGLE = 0; //TODO find
         public static final double MIN_ANGLE = 17; //TODO find
         public static final double kStartAngle = 20; //TODO find
-        public static final double kNeutralAngle = 90; //TODO find
+        public static final double kNeutralAngle = 50; //TODO find
         public static final double kDropZone = 0; //TODO find
         public static final double kPickup = 0; //TODO find
         public static final double kStartExtension = 0; //TODO find
@@ -66,21 +66,9 @@ public class Control {
         public static final double kMaxVel = 7; //TODO check m/s
         
 
-        public static final double kflP = 0.9;
-        public static final double kflI = 0;
-        public static final double kflD = 0.2;
-
-        public static final double krlP = 0.9;
-        public static final double krlI = 0;
-        public static final double krlD = 0.2;
-
-        public static final double kfrP = 0.9;
-        public static final double kfrI = 0;
-        public static final double kfrD = 0.2;
-
-        public static final double krrP = 0.9;
-        public static final double krrI = 0;
-        public static final double krrD = 0.2;
+        public static final double kP = 3.9; //Keep upping P until oscillation gets out of control, 
+        public static final double kI = 0;   //then reduce P a bit and add D until oscillation is gone
+        public static final double kD = 0.2; //Use I if there is still steady-state error, though unlikely and can be risky
 
         public static final double kV = 1.52; //TODO check with ReCalc
         public static final double kA = 0.18; //TODO check with ReCalc

@@ -10,6 +10,17 @@ import edu.wpi.first.wpilibj.PS5Controller;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 public class Util {
+    public static double arrayAverage(Double arr[]){
+        double total = 0;
+        for (int i = 0; i < arr.length; i++){
+            total += arr[i];
+        }
+        return total / arr.length;
+    }
+    public static Double[] arrayReplace(Double arr[], int position, double input){
+        arr[position] = input;
+        return arr;
+    }
     public static CANSparkMax createSparkGroup(int[] ids, boolean invWhole, boolean invIndividual) {
 		if (ids.length == 0) {
 			System.err.println("[EE] Attempted to create empty group of CANSparkMax");

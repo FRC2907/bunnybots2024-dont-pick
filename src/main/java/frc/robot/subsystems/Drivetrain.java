@@ -24,10 +24,13 @@ public class Drivetrain implements ISubsystem{
     private RelativeEncoder flEncoder, rlEncoder, frEncoder, rrEncoder;
     private double frontLeftSetPoint, rearLeftSetPoint, frontRightSetPoint, rearRightSetPoint;
     private MecanumDrive dt;
-    private MecanumDriveWheelPositions wheelPositions;
+    //private MecanumDriveWheelPositions wheelPositions;
     private AHRS gyro;
     private SimpleMotorFeedforward flFeedforward, rlFeedforward, frFeedforward, rrFeedforward;
     private PIDController flPID, rlPID, frPID, rrPID;
+    private Double[] flOutput, frOutput, rlOutput, rrOutput;
+    private double flVelAverage, frVelAverage, rlVelAverage, rrVelAverage;
+    private int head;
 
 
     public Drivetrain(){
@@ -43,9 +46,9 @@ public class Drivetrain implements ISubsystem{
 
         //dt = new MecanumDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
 
-        wheelPositions = new MecanumDriveWheelPositions(
+        /*wheelPositions = new MecanumDriveWheelPositions(
             flEncoder.getPosition(), frEncoder.getPosition(), 
-            rlEncoder.getPosition(), rrEncoder.getPosition());
+            rlEncoder.getPosition(), rrEncoder.getPosition());*/
         gyro = new AHRS(SPI.Port.kMXP);
 
         flFeedforward = new SimpleMotorFeedforward(Control.drivetrain.kS, Control.drivetrain.kV, Control.drivetrain.kA);
@@ -53,10 +56,10 @@ public class Drivetrain implements ISubsystem{
         frFeedforward = new SimpleMotorFeedforward(Control.drivetrain.kS, Control.drivetrain.kV, Control.drivetrain.kA);
         rrFeedforward = new SimpleMotorFeedforward(Control.drivetrain.kS, Control.drivetrain.kV, Control.drivetrain.kA);
 
-        flPID = new PIDController(Control.drivetrain.kflP, Control.drivetrain.kflI, Control.drivetrain.kflD);
-        rlPID = new PIDController(Control.drivetrain.krlP, Control.drivetrain.krlI, Control.drivetrain.krlD);
-        frPID = new PIDController(Control.drivetrain.kfrP, Control.drivetrain.kfrI, Control.drivetrain.kfrD);
-        rrPID = new PIDController(Control.drivetrain.krrP, Control.drivetrain.krrI, Control.drivetrain.krrD);
+        flPID = new PIDController(Control.drivetrain.kP, Control.drivetrain.kI, Control.drivetrain.kD);
+        rlPID = new PIDController(Control.drivetrain.kP, Control.drivetrain.kI, Control.drivetrain.kD);
+        frPID = new PIDController(Control.drivetrain.kP, Control.drivetrain.kI, Control.drivetrain.kD);
+        rrPID = new PIDController(Control.drivetrain.kP, Control.drivetrain.kI, Control.drivetrain.kD);
 
         frontLeftMotor.setInverted(false);
         frontRightMotor.setInverted(true);
@@ -78,10 +81,13 @@ public class Drivetrain implements ISubsystem{
         rearLeftMotor.setIdleMode(IdleMode.kBrake);
         rearRightMotor.setIdleMode(IdleMode.kBrake);
 
-        /*SmartDashboard.putNumber("dt_flSetPoint", frontLeftSetPoint);
-        SmartDashboard.putNumber("dt_frSetPoint", frontRightSetPoint);
-        SmartDashboard.putNumber("dt_rlSetPoint", rearLeftSetPoint);
-        SmartDashboard.putNumber("dt_rrSetPoint", rearRightSetPoint);*/
+        flOutput = new Double[10];
+        frOutput = new Double[10];
+        rlOutput = new Double[10];
+        rrOutput = new Double[10];
+
+        gyro.reset();
+        head = 0;
     }
 
     private static Drivetrain instance; 
@@ -126,50 +132,51 @@ public class Drivetrain implements ISubsystem{
         rearRightSetPoint = rrSetPoint;
     }
 
-    private void conversion(){
-        /*frontLeftSetPoint = frontLeftSetPoint * Control.drivetrain.GEAR_RATIO;
-        frontLeftSetPoint = frontLeftSetPoint * Control.drivetrain.GEAR_RATIO;
-        frontLeftSetPoint = frontLeftSetPoint * Control.drivetrain.GEAR_RATIO;
-        frontLeftSetPoint = frontLeftSetPoint * Control.drivetrain.GEAR_RATIO;*/
-        
-        frontLeftSetPoint =  Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(frontLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
-        rearLeftSetPoint =   Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(rearLeftSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
-        frontRightSetPoint = Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(frontRightSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
-        rearRightSetPoint =  Control.drivetrain.GEAR_RATIO * Util.metersPerSecondToRPM(rearRightSetPoint, Units.inchesToMeters(Control.drivetrain.WHEEL_DIAMETER));
-    }
-
-    public void gainTesting(){
-        /*frontLeftMotor.setVoltage(0.13);
-        frontRightMotor.setVoltage(0.13);
-        rearLeftMotor.setVoltage(0.13);
-        rearRightMotor.setVoltage(0.13);*/
-
+    private void gainTesting(){
         frontLeftSetPoint = 0.5;
         frontRightSetPoint = 0.5;
         rearLeftSetPoint = 0.5;
         rearRightSetPoint = 0.5;
     }
 
+    private void outputAverage(){
+       flOutput = Util.arrayReplace(flOutput, head, flEncoder.getVelocity());
+       flVelAverage = Util.arrayAverage(flOutput);
+       frOutput = Util.arrayReplace(frOutput, head, frEncoder.getVelocity());
+       frVelAverage = Util.arrayAverage(frOutput);
+       rlOutput = Util.arrayReplace(rlOutput, head, rlEncoder.getVelocity());
+       rlVelAverage = Util.arrayAverage(rlOutput);
+       rrOutput = Util.arrayReplace(rrOutput, head, rrEncoder.getVelocity());
+       rrVelAverage = Util.arrayAverage(rrOutput);
+
+       head++;
+    }
+
     
     @Override
     public void onLoop(){
         gainTesting();
+        outputAverage();
 
-        //COMMENT OUT WHEN TESTING
-        //conversion();
-
-        frontLeftMotor. setVoltage(Util.clamp(Control.MIN_VOLTAGE, 
+        frontLeftMotor.setVoltage(Util.clamp(Control.MIN_VOLTAGE, 
              flFeedforward.calculate(frontLeftSetPoint)
-         +   flPID.calculate(Util.RPMToMetersPerSecond(flEncoder.getVelocity(), Control.drivetrain.WHEEL_DIAMETER) / 5.95, frontLeftSetPoint), Control.MAX_VOLTAGE));
-        rearLeftMotor.  setVoltage(Util.clamp(Control.MIN_VOLTAGE,
+         +   flPID.calculate(Util.RPMToMetersPerSecond(flVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, frontLeftSetPoint),
+                                             Control.MAX_VOLTAGE));
+
+        rearLeftMotor.setVoltage(Util.clamp(Control.MIN_VOLTAGE,
              rlFeedforward.calculate(rearLeftSetPoint)
-         +   rlPID.calculate(Util.RPMToMetersPerSecond(rlEncoder.getVelocity(), Control.drivetrain.WHEEL_DIAMETER) / 5.95, rearLeftSetPoint), Control.MAX_VOLTAGE));
+         +   rlPID.calculate(Util.RPMToMetersPerSecond(rlVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, rearLeftSetPoint), 
+                                            Control.MAX_VOLTAGE));
+
         frontRightMotor.setVoltage(Util.clamp(Control.MIN_VOLTAGE, 
             frFeedforward.calculate(frontRightSetPoint)
-         +  frPID.calculate(Util.RPMToMetersPerSecond(frEncoder.getVelocity(), Control.drivetrain.WHEEL_DIAMETER) / 5.95, frontRightSetPoint), Control.MAX_VOLTAGE));
-        rearRightMotor. setVoltage(Util.clamp(Control.MIN_VOLTAGE,
+         +  frPID.calculate(Util.RPMToMetersPerSecond(frVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, frontRightSetPoint), 
+                                              Control.MAX_VOLTAGE));
+
+        rearRightMotor.setVoltage(Util.clamp(Control.MIN_VOLTAGE,
             rrFeedforward.calculate(rearRightSetPoint) 
-         +  rrPID.calculate(Util.RPMToMetersPerSecond(rrEncoder.getVelocity(), Control.drivetrain.WHEEL_DIAMETER) / 5.95, rearRightSetPoint), Control.MAX_VOLTAGE));
+         +  rrPID.calculate(Util.RPMToMetersPerSecond(rrVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, rearRightSetPoint), 
+                                             Control.MAX_VOLTAGE));
         
         submitTelemetry();
         receiveOptions();
@@ -181,12 +188,16 @@ public class Drivetrain implements ISubsystem{
         SmartDashboard.putNumber("dt_frVelocity", frEncoder.getVelocity() / 5.95);
         SmartDashboard.putNumber("dt_rlVelocity", rlEncoder.getVelocity() / 5.95);
         SmartDashboard.putNumber("dt_rrVelocity", rrEncoder.getVelocity() / 5.95);
-        SmartDashboard.putNumber("dt_flSetPoint", frontLeftSetPoint);
-        SmartDashboard.putNumber("dt_frSetPoint", frontRightSetPoint);
-        SmartDashboard.putNumber("dt_rlSetPoint", rearLeftSetPoint);
-        SmartDashboard.putNumber("dt_rrSetPoint", rearRightSetPoint);
+        SmartDashboard.putNumber("dt_flSetPoint", Util.metersPerSecondToRPM(frontLeftSetPoint, Units.inchesToMeters(6)));
+        SmartDashboard.putNumber("dt_frSetPoint", Util.metersPerSecondToRPM(frontRightSetPoint, Units.inchesToMeters(6)));
+        SmartDashboard.putNumber("dt_rlSetPoint", Util.metersPerSecondToRPM(rearLeftSetPoint, Units.inchesToMeters(6)));
+        SmartDashboard.putNumber("dt_rrSetPoint", Util.metersPerSecondToRPM(rearRightSetPoint, Units.inchesToMeters(6)));
         SmartDashboard.putNumber("dt_heading", gyro.getAngle());
         SmartDashboard.putNumber("dt_angVel", gyro.getRate());
+        SmartDashboard.putNumberArray("dt_flOutput", flOutput);
+        SmartDashboard.putNumberArray("dt_frOutput", frOutput);
+        SmartDashboard.putNumberArray("dt_rlOutput", rlOutput);
+        SmartDashboard.putNumberArray("dt_rrOutput", rrOutput);
         /*SmartDashboard.putData("dt_flPID", flPID);
         SmartDashboard.putData("dt_frPID", frPID);
         SmartDashboard.putData("dt_rlPID", rlPID);
