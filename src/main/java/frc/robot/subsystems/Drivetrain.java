@@ -28,7 +28,7 @@ public class Drivetrain implements ISubsystem{
     private AHRS gyro;
     private SimpleMotorFeedforward flFeedforward, rlFeedforward, frFeedforward, rrFeedforward;
     private PIDController flPID, rlPID, frPID, rrPID;
-    private Double[] flOutput, frOutput, rlOutput, rrOutput;
+    private double[] flOutput, frOutput, rlOutput, rrOutput;
     private double flVelAverage, frVelAverage, rlVelAverage, rrVelAverage;
     private int head;
 
@@ -81,10 +81,15 @@ public class Drivetrain implements ISubsystem{
         rearLeftMotor.setIdleMode(IdleMode.kBrake);
         rearRightMotor.setIdleMode(IdleMode.kBrake);
 
-        flOutput = new Double[10];
-        frOutput = new Double[10];
-        rlOutput = new Double[10];
-        rrOutput = new Double[10];
+        flOutput = new double[10];
+        frOutput = new double[10];
+        rlOutput = new double[10];
+        rrOutput = new double[10];
+
+        for (int i = 0; i < 10; i++){ flOutput[i] = 0; }
+        for (int i = 0; i < 10; i++){ frOutput[i] = 0; }
+        for (int i = 0; i < 10; i++){ rlOutput[i] = 0; }
+        for (int i = 0; i < 10; i++){ rrOutput[i] = 0; }
 
         gyro.reset();
         head = 0;
@@ -150,6 +155,7 @@ public class Drivetrain implements ISubsystem{
        rrVelAverage = Util.arrayAverage(rrOutput);
 
        head++;
+       head %= 10;
     }
 
     
@@ -160,23 +166,23 @@ public class Drivetrain implements ISubsystem{
 
         frontLeftMotor.setVoltage(Util.clamp(Control.MIN_VOLTAGE, 
              flFeedforward.calculate(frontLeftSetPoint)
-         +   flPID.calculate(Util.RPMToMetersPerSecond(flVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, frontLeftSetPoint),
-                                             Control.MAX_VOLTAGE));
+         +   flPID.calculate(Util.RPMToMetersPerSecond(flVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, frontLeftSetPoint)
+         ,   Control.MAX_VOLTAGE));
 
         rearLeftMotor.setVoltage(Util.clamp(Control.MIN_VOLTAGE,
              rlFeedforward.calculate(rearLeftSetPoint)
-         +   rlPID.calculate(Util.RPMToMetersPerSecond(rlVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, rearLeftSetPoint), 
-                                            Control.MAX_VOLTAGE));
+         +   rlPID.calculate(Util.RPMToMetersPerSecond(rlVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, rearLeftSetPoint)
+         ,   Control.MAX_VOLTAGE));
 
         frontRightMotor.setVoltage(Util.clamp(Control.MIN_VOLTAGE, 
             frFeedforward.calculate(frontRightSetPoint)
-         +  frPID.calculate(Util.RPMToMetersPerSecond(frVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, frontRightSetPoint), 
-                                              Control.MAX_VOLTAGE));
+         +  frPID.calculate(Util.RPMToMetersPerSecond(frVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, frontRightSetPoint)
+         ,   Control.MAX_VOLTAGE));
 
         rearRightMotor.setVoltage(Util.clamp(Control.MIN_VOLTAGE,
             rrFeedforward.calculate(rearRightSetPoint) 
-         +  rrPID.calculate(Util.RPMToMetersPerSecond(rrVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, rearRightSetPoint), 
-                                             Control.MAX_VOLTAGE));
+         +  rrPID.calculate(Util.RPMToMetersPerSecond(rrVelAverage, Control.drivetrain.WHEEL_DIAMETER) / Control.drivetrain.GEAR_RATIO, rearRightSetPoint)
+         ,   Control.MAX_VOLTAGE));
         
         submitTelemetry();
         receiveOptions();

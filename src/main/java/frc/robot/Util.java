@@ -10,14 +10,14 @@ import edu.wpi.first.wpilibj.PS5Controller;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 public class Util {
-    public static double arrayAverage(Double arr[]){
+    public static double arrayAverage(double arr[]){
         double total = 0;
         for (int i = 0; i < arr.length; i++){
             total += arr[i];
         }
         return total / arr.length;
     }
-    public static Double[] arrayReplace(Double arr[], int position, double input){
+    public static double[] arrayReplace(double arr[], int position, double input){
         arr[position] = input;
         return arr;
     }

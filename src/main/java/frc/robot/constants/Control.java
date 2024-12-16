@@ -66,9 +66,9 @@ public class Control {
         public static final double kMaxVel = 7; //TODO check m/s
         
 
-        public static final double kP = 3.9; //Keep upping P until oscillation gets out of control, 
-        public static final double kI = 0;   //then reduce P a bit and add D until oscillation is gone
-        public static final double kD = 0.2; //Use I if there is still steady-state error, though unlikely and can be risky
+        public static final double kP = 0; //(0.75) Keep upping P until oscillation gets out of control, 
+        public static final double kI = 0; //then reduce P a bit and add D until oscillation is gone
+        public static final double kD = 0; //(0.27) Use I if there is still steady-state error, though unlikely and can be risky
 
         public static final double kV = 1.52; //TODO check with ReCalc
         public static final double kA = 0.18; //TODO check with ReCalc
